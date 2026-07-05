@@ -2,41 +2,12 @@
   <div class="govuk-generic-header__container govuk-width-container">
     <div class="govuk-generic-header__logo">
       <a href="/" class="govuk-generic-header__homepage-link">
+        <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#FFFFFF"><path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/></svg> 
         FiMS
       </a>
     </div>
   </div>
 </header>
-<section aria-label="Service information" class="govuk-service-navigation"
-    data-module="govuk-service-navigation">
-    <div class="govuk-width-container">
-        <div class="govuk-service-navigation__container">
-            <span class="govuk-service-navigation__service-name">
-            <a href="#" class="govuk-service-navigation__link">
-                Receipts
-            </a>
-            </span>
-            <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
-            <button type="button" class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle" aria-controls="navigation" hidden aria-hidden="true">
-                Menu
-            </button>
-            <ul class="govuk-service-navigation__list" id="navigation">
-                {% for (page, link) in pages %}
-                <li class="govuk-service-navigation__item {{ "govuk-service-navigation__item--active" if loop.index0 == active }}">
-                    <a class="govuk-service-navigation__link" href="{{ link }}">
-                        {% if loop.index0 == active %}
-                            <strong class="govuk-service-navigation__active-fallback">{{ page }}</strong>
-                        {% else %}
-                            {{ page }}
-                        {% endif %}
-                    </a>
-                </li>
-                {% endfor %}            
-            </ul>
-            </nav>
-        </div>
-    </div>
-</section>
 <div class="govuk-phase-banner govuk-width-container">
   <p class="govuk-phase-banner__content">
     <strong class="govuk-tag govuk-phase-banner__content__tag govuk-tag--orange">

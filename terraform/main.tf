@@ -57,6 +57,12 @@ resource "kubernetes_deployment_v1" "this" {
                 name = "aws-credentials"
               }
             }
+
+            volume_mount {
+              name = "config"
+              mount_path = "/etc/receipt-manager"
+              read_only = true
+            }
             
             liveness_probe {
               http_get {
@@ -69,6 +75,13 @@ resource "kubernetes_deployment_v1" "this" {
                 path = "/"
                 port = "http"
               }
+            }
+          }
+
+          volume {
+            name = "config"
+            secret {
+              secret_name = "config"
             }
           }
         }

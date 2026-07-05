@@ -1,38 +1,35 @@
 #[cfg(not(feature = "debug"))]
 use assets::Manifest;
-use aws_config::{
-    BehaviorVersion, Region, meta::region::RegionProviderChain, sts::AssumeRoleProvider,
-};
-use aws_sdk_s3::Client;
-use axum::{
-    Router,
-    extract::State,
-    http::StatusCode,
-    response::{Html, IntoResponse, Redirect},
-    routing::{get, post},
-};
+use axum::{Router, extract::State, response::Html, routing::get};
 use minijinja::{Environment, context, path_loader};
 use minijinja_autoreload::AutoReloader;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use std::{path::Path, sync::Arc};
+use tokio::net::unix::SocketAddr;
 use tower_http::services::ServeDir;
 use tower_sessions::{
     Expiry, MemoryStore, SessionManagerLayer,
     cookie::{Key, time::Duration},
 };
-use tracing::{debug, error};
+use tracing::{debug, error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+use crate::config::Config;
+
 mod assets;
+mod config;
+mod middleware;
+mod pricing;
 mod routes;
 
 const TEMPLATE_PATH: &str = "views";
 
-struct AppState {
+pub struct AppState {
     loader: AutoReloader,
     #[cfg(not(feature = "debug"))]
     manifest: Manifest,
     pool: Pool<Postgres>,
+    config: Config,
 }
 
 const PAGES: &'static [(&str, &str)] = &[
@@ -49,6 +46,8 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
+
+    let config = config::discover().await;
 
     #[allow(unused)]
     let maybe_manifest = assets::load_manifest();
@@ -77,26 +76,62 @@ async fn main() {
     let session_layer = SessionManagerLayer::new(session_store)
         .with_secure(true)
         .with_expiry(Expiry::OnInactivity(Duration::hours(12)))
-        .with_always_save(true)
+        .with_same_site(tower_sessions::cookie::SameSite::Lax)
         .with_signed(key);
 
-    // build our application with a single route
+    let listen_addr = format!("{}:{}", config.host, config.port);
+
+    let state = Arc::new(AppState {
+        loader: reloader,
+        #[cfg(not(feature = "debug"))]
+        manifest: maybe_manifest.expect("Unable to find asset manifest"),
+        pool,
+        config,
+    });
+
     let app = Router::new()
-        .route("/", get(async || Redirect::to("/receipts").into_response()))
-        .nest("/receipts", routes::receipts::router())
+        .route("/", get(index))
+        .nest("/signin", routes::signin::router())
+        .nest("/receipts", routes::receipts::router(state.clone()))
         .nest("/upload", routes::upload::router())
         .layer(session_layer)
         .fallback_service(ServeDir::new("public"))
-        .with_state(Arc::new(AppState {
-            loader: reloader,
-            #[cfg(not(feature = "debug"))]
-            manifest: maybe_manifest.expect("Unable to find asset manifest"),
-            pool,
-        }));
+        .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let Ok(listener) = tokio::net::TcpListener::bind(&listen_addr).await else {
+        error!("");
+        return;
+    };
 
-    tracing::info!("Listening on 0.0.0.0:3000");
+    info!("Listening on {listen_addr}");
 
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn index(State(state): State<Arc<AppState>>) -> axum::response::Result<Html<String>> {
+    let scripts = assets::resolve_scripts(
+        Path::new("client/main.ts"),
+        #[cfg(not(feature = "debug"))]
+        Some(&state.manifest),
+        #[cfg(feature = "debug")]
+        None,
+    );
+    debug!("Loaded scripts");
+
+    let css = assets::resolve_css(
+        Path::new("client/main.ts"),
+        #[cfg(not(feature = "debug"))]
+        Some(&state.manifest),
+        #[cfg(feature = "debug")]
+        None,
+    );
+    let env = state.loader.acquire_env().unwrap();
+
+    let res = env
+        .get_template("index.njk")
+        .unwrap()
+        .render(context! { css => css, scripts => scripts })
+        .unwrap();
+
+    Ok(Html(res))
 }

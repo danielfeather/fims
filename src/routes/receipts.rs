@@ -14,13 +14,17 @@ use axum::{
 use minijinja::context;
 use tracing::{debug, error};
 
-use crate::{AppState, PAGES, assets};
+use crate::{AppState, PAGES, assets, middleware};
 
-pub fn router() -> Router<Arc<AppState>> {
+pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::new()
         .route("/", get(list))
         .route("/new", get(new_form))
         .route("/{id}", get(get_receipt))
+        .route_layer(axum::middleware::from_fn_with_state(
+            state,
+            middleware::auth,
+        ))
 }
 
 async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html<String>> {
