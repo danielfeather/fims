@@ -5,7 +5,6 @@ use minijinja::{Environment, context, path_loader};
 use minijinja_autoreload::AutoReloader;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use std::{path::Path, sync::Arc};
-use tokio::net::unix::SocketAddr;
 use tower_http::services::ServeDir;
 use tower_sessions::{
     Expiry, MemoryStore, SessionManagerLayer,
@@ -28,7 +27,7 @@ pub struct AppState {
     loader: AutoReloader,
     #[cfg(not(feature = "debug"))]
     manifest: Manifest,
-    pool: Pool<Postgres>,
+    _pool: Pool<Postgres>,
     config: Config,
 }
 
@@ -56,7 +55,7 @@ async fn main() {
     let database_url = std::env::var("DATABASE_URL")
         .expect("Unable to connect to DB, DATABASE_URL is not present in env");
 
-    let pool = PgPoolOptions::new()
+    let _pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
         .await
@@ -85,7 +84,7 @@ async fn main() {
         loader: reloader,
         #[cfg(not(feature = "debug"))]
         manifest: maybe_manifest.expect("Unable to find asset manifest"),
-        pool,
+        _pool,
         config,
     });
 
@@ -93,7 +92,7 @@ async fn main() {
         .route("/", get(index))
         .nest("/signin", routes::signin::router())
         .nest("/receipts", routes::receipts::router(state.clone()))
-        .nest("/upload", routes::upload::router())
+        .nest("/upload", routes::upload::router(state.clone()))
         .layer(session_layer)
         .fallback_service(ServeDir::new("public"))
         .with_state(state);

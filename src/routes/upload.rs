@@ -15,13 +15,17 @@ use tower_sessions::Session;
 use tracing::debug;
 use uuid::Uuid;
 
-use crate::{AppState, PAGES, assets};
+use crate::{AppState, PAGES, assets, middleware};
 
-pub fn router() -> Router<Arc<AppState>> {
+pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::new()
         .route("/", get(form))
         .route("/", post(post_form))
         .route("/success", get(success))
+        .route_layer(axum::middleware::from_fn_with_state(
+            state,
+            middleware::auth,
+        ))
 }
 
 async fn post_form(session: Session, mut multipart: Multipart) -> axum::response::Result<Redirect> {
