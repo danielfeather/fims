@@ -112,10 +112,6 @@ resource "kubernetes_service_v1" "this" {
   }
 }
 
-resource "kubernetes_manifest" "middleware" {
-  manifest = yamldecode(file("middleware.yaml"))
-}
-
 resource "kubernetes_ingress_v1" "this" {
   depends_on = [ kubernetes_manifest.middleware ]
   metadata {
@@ -123,7 +119,6 @@ resource "kubernetes_ingress_v1" "this" {
     namespace = "receipt-manager"
     annotations = {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
-      "traefik.ingress.kubernetes.io/router.middlewares" = "receipt-manager-traefik-forward-auth@kubernetescrd"
     }
   }
   spec {
