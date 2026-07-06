@@ -113,7 +113,6 @@ resource "kubernetes_service_v1" "this" {
 }
 
 resource "kubernetes_ingress_v1" "this" {
-  depends_on = [ kubernetes_manifest.middleware ]
   metadata {
     name = "receipt-manager"
     namespace = "receipt-manager"
