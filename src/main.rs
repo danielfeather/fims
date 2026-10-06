@@ -31,10 +31,7 @@ pub struct AppState {
     config: Config,
 }
 
-const PAGES: &'static [(&str, &str)] = &[
-    ("Manage receipts", "/receipts"),
-    ("Upload receipts", "/upload"),
-];
+const PAGES: &'static [(&str, &str)] = &[("Receipts", "/receipts"), ("Expenses", "/expenses")];
 
 #[tokio::main]
 async fn main() {
@@ -92,6 +89,7 @@ async fn main() {
         .route("/", get(index))
         .nest("/signin", routes::signin::router())
         .nest("/receipts", routes::receipts::router(state.clone()))
+        .nest("/expenses", routes::expenses::router(state.clone()))
         .nest("/upload", routes::upload::router(state.clone()))
         .layer(session_layer)
         .fallback_service(ServeDir::new("public"))

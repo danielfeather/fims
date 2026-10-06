@@ -1,0 +1,31 @@
+{% extends "page.njk" %} 
+{% block body %} 
+<table class="govuk-table">
+  <caption class="govuk-table__caption govuk-table__caption--l">
+    Expenses
+    <a draggable="false" href="/expenses/new" role="button" class="govuk-button" data-module="govuk-button" data-govuk-button-init="">New</a>
+  </caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Name</th>
+      <th scope="col" class="govuk-table__header">Status</th>
+      <th scope="col" class="govuk-table__header">Schedule</th>
+      <th scope="col" class="govuk-table__header">Amount</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for expense in expenses %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">{{ expense.name }}</td>
+      <td class="govuk-table__cell">
+        <strong class="govuk-tag govuk-tag--green">
+          Active
+        </strong>
+      </td>
+      <td class="govuk-table__cell"><a href="/expenses/{{ expense.id }}" class="govuk-link">View</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock body%}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+  pull_request:
   
 permissions:  # added using https://github.com/step-security/secure-repo
   contents: read
@@ -29,7 +30,21 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v6
 
+      - name: Cache cargo
+        id: cache-cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
       - name: Install SQLx CLI
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
         run: cargo install sqlx-cli --no-default-features --features=postgres
 
       - name: Setup and Run Migrations
@@ -85,6 +100,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
       - build

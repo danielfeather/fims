@@ -176,7 +176,7 @@ async fn new_form(State(state): State<Arc<AppState>>) -> axum::response::Result<
 
     let env = state.loader.acquire_env().unwrap();
 
-    let templ = env.get_template("receipt.njk").unwrap();
+    let templ = env.get_template("new-receipt.njk").unwrap();
 
     let res = match templ
         .render(context! { css => css, scripts => scripts, pages => PAGES, active => 0 })
