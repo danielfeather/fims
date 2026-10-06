@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup and Run Migrations
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@postgres/receipts"
+          DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1:5432/receipts"
         run: sqlx database setup --no-dotenv
 
   build:
