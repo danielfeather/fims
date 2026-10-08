@@ -71,13 +71,13 @@ resource "kubernetes_deployment_v1" "this" {
             
             liveness_probe {
               http_get {
-                path = "/"
+                path = "/healthz"
                 port = "http"
               }
             }
             readiness_probe {
               http_get {
-                path = "/"
+                path = "/healthz"
                 port = "http"
               }
             }

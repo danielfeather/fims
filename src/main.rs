@@ -3,6 +3,7 @@ use assets::Manifest;
 use axum::{Router, extract::State, response::Html, routing::get};
 use minijinja::{Environment, context, path_loader};
 use minijinja_autoreload::AutoReloader;
+use reqwest::StatusCode;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use std::{path::Path, sync::Arc};
 use tower_http::services::ServeDir;
@@ -89,6 +90,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(index))
+        .route("/healthz", get(async || StatusCode::OK))
         .nest("/signin", routes::signin::router())
         .nest("/receipts", routes::receipts::router(state.clone()))
         .nest("/expenses", routes::expenses::router(state.clone()))
