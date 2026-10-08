@@ -58,6 +58,11 @@ resource "kubernetes_deployment_v1" "this" {
               }
             }
 
+            env {
+              name = "MAINTENANCE"
+              value = "true"
+            }
+
             volume_mount {
               name = "config"
               mount_path = "/etc/receipt-manager"

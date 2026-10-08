@@ -29,6 +29,7 @@ pub struct AppState {
     manifest: Manifest,
     _pool: Pool<Postgres>,
     config: Config,
+    maintenance: bool,
 }
 
 const PAGES: &'static [(&str, &str)] = &[("Receipts", "/receipts"), ("Expenses", "/expenses")];
@@ -83,6 +84,7 @@ async fn main() {
         manifest: maybe_manifest.expect("Unable to find asset manifest"),
         _pool,
         config,
+        maintenance: std::env::var("MAINTENANCE").map_or(false, |val| val == "true"),
     });
 
     let app = Router::new()
@@ -91,6 +93,10 @@ async fn main() {
         .nest("/receipts", routes::receipts::router(state.clone()))
         .nest("/expenses", routes::expenses::router(state.clone()))
         .nest("/upload", routes::upload::router(state.clone()))
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            middleware::maintenance,
+        ))
         .layer(session_layer)
         .fallback_service(ServeDir::new("public"))
         .with_state(state);
