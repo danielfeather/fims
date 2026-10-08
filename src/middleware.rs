@@ -38,7 +38,7 @@ pub async fn maintenance(
     request: Request,
     next: Next,
 ) -> Response {
-    if state.maintenance {
+    if state.maintenance && request.uri() != "/healthz" {
         let scripts = assets::resolve_scripts(
             Path::new("client/main.ts"),
             #[cfg(not(feature = "debug"))]
