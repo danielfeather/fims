@@ -30,13 +30,13 @@ services:
       - .env
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.receipts.tls=true'
-      - 'traefik.http.routers.receipts.rule=Host(`receipts.localhost`)'
-      - 'traefik.http.services.receipts.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.fims.tls=true'
+      - 'traefik.http.routers.fims.rule=Host(`fims.localhost`)'
+      - 'traefik.http.services.fims.loadbalancer.server.port=3000'
     volumes:
       - ~/.aws/credentials:/root/.aws/credentials
-      - ./docker/development/config.toml:/etc/receipt-manager/config.toml
-      - ./:/opt/receipt-manager
+      - ./docker/development/config.toml:/etc/fims/config.toml
+      - ./:/opt/fims
   
   migrations:
     depends_on:

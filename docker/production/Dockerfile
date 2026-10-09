@@ -18,10 +18,10 @@ RUN deno run build
 
 FROM alpine:3.23
 
-WORKDIR /opt/receipt-manager
+WORKDIR /opt/fims
 
-COPY --from=rust /build/target/release/receipt-manager .
+COPY --from=rust /build/target/release/fims .
 COPY views ./views
 COPY --from=deno /build/public ./public
 
-CMD [ "./receipt-manager" ]
+CMD [ "./fims" ]

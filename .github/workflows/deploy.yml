@@ -141,7 +141,7 @@ jobs:
       - name: Get OIDC token from GitHub
         id: get_token
         run: |
-          token_json=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=thetearoom")
+          token_json=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=fims")
           oidc_token=$(echo "$token_json" | jq -r '.value')
           echo "token=${oidc_token}" >> $GITHUB_OUTPUT 
 
