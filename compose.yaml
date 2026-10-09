@@ -23,7 +23,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: container/development/Dockerfile
+      dockerfile: docker/development/Dockerfile
     ports:
       - 5173:5173
     env_file:

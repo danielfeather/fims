@@ -19,3 +19,17 @@ $font-family: arial, sans-serif;
 :root {
   --govuk-brand-colour: black;
 }
+
+.loader {
+  border: 12px solid #dee0e2;
+  border-radius: 50%;
+  border-top-color: govuk-colour("blue");
+  width: 80px;
+  height: 80px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+.loader.loader__fast {
+  animation-duration: 1s;
+}

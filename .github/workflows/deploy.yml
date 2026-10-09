@@ -45,7 +45,7 @@ jobs:
 
       - name: Install SQLx CLI
         if: steps.cache-cargo.outputs.cache-hit != 'true'
-        run: cargo install sqlx-cli --no-default-features --features=postgres
+        run: cargo install sqlx-cli --no-default-features --features=postgres --force
 
       - name: Setup and Run Migrations
         env:
@@ -73,7 +73,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/danielfeather/receipt-manager
+            ghcr.io/danielfeather/fims
           tags: |
             type=ref,event=branch
             type=sha

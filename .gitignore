@@ -8,3 +8,4 @@ vendor
 .DS_STORE
 *.pem
 .env
+docker/**/*/config.toml
