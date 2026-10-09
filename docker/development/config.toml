@@ -1,0 +1,12 @@
+host = "0.0.0.0"
+port = 3000
+base_url = "https://fims.localhost"
+environment = "development"
+
+[identity-provider.default]
+type = "oidc"
+issuer = "https://id.lancastrian.dev"
+authorize_endpoint = "https://id.lancastrian.dev/authorize"
+token_endpoint = "https://id.lancastrian.dev/api/oidc/token"
+client_id = "fimsdev"
+client_secret = "IfT0ZbeyhrM9LKJ18yOjJHljBLfvSVJI"

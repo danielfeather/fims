@@ -4,22 +4,33 @@
 <h1 class="govuk-heading-l">New expense</h1>
 <form action="/receipt/new">
     <div class="govuk-form-group">
-        <label class="govuk-label" for="event-name">
-            Give the expense a name
+        <label class="govuk-label" for="expense-name">
+            Name
         </label>
-        <input class="govuk-input" id="event-name" name="eventName" type="text">
+        <input class="govuk-input govuk-input--width-20" id="expense-name" name="name" type="text">
     </div>
     <div class="govuk-form-group">
-        <label class="govuk-label" for="event-name">
-            Give a brief description of the expense
+        <label class="govuk-label" for="expense-currency">
+            What is the currency
         </label>
-        <input class="govuk-input" id="event-name" name="eventName" type="text">
+        <input class="govuk-input govuk-input--width-3" id="expense-currency" name="currency" type="text" value="GBP" max="3">
     </div>
     <div class="govuk-form-group">
         <label class="govuk-label" for="expense-amount">
-            What is the amount in pounds
+            What is the amount
         </label>
-        <input class="govuk-input" id="expense-amount" name="expenseAmount" type="text">
+        <input class="govuk-input govuk-input--width-10" id="expense-amount" name="amount" type="text">
+    </div>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="sort">
+            How often should this repeat
+        </label>
+        <select class="govuk-select" id="sort" name="frequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="annually">Annually</option>
+        </select>
     </div>
     <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" role="group" aria-describedby="expense-start-hint">
@@ -32,26 +43,26 @@
             <div class="govuk-date-input" id="expense-start-hint">
                 <div class="govuk-date-input__item">
                     <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="expense_day">
+                        <label class="govuk-label govuk-date-input__label" for="start_day">
                             Day
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="expense_day" name="expense_day" type="text" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="start_day" name="start_day" type="text" inputmode="numeric">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
                     <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="expense_month">
+                        <label class="govuk-label govuk-date-input__label" for="start_month">
                             Month
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="expense_month" name="expense_month" type="text" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="start_month" name="start_month" type="text" inputmode="numeric">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
                     <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="expense_year">
+                        <label class="govuk-label govuk-date-input__label" for="start_year">
                             Year
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="expense_year" name="expense_year" type="text" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="start_year" name="start_year" type="text" inputmode="numeric">
                     </div>
                 </div>
             </div>
@@ -60,9 +71,6 @@
     <div class="govuk-button-group">
     <button name="submit" type="submit" class="govuk-button" data-module="govuk-button">
         Save and continue
-    </button>
-    <button name="save_as_draft" type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-        Save as draft
     </button>
     </div>
 </form>
