@@ -1,14 +1,24 @@
+use crate::{
+    AppState, PAGES, assets, middleware,
+    routes::expenses::types::{Currency, Frequency},
+};
 use axum::{
     Router,
-    extract::{Path as PathParam, State},
+    extract::{Multipart, Path as PathParam, State},
     response::{Html, Redirect},
     routing::get,
 };
+use chrono::NaiveDate;
 use minijinja::context;
+use serde::{
+    Deserialize,
+    de::{IntoDeserializer, value::StrDeserializer},
+};
 use std::{path::Path, sync::Arc};
+use tower_sessions::Session;
 use tracing::debug;
 
-use crate::{AppState, PAGES, assets, middleware};
+pub mod types;
 
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::new()
@@ -29,7 +39,6 @@ async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html
         #[cfg(feature = "debug")]
         None,
     );
-    debug!("Loaded scripts");
 
     let css = assets::resolve_css(
         Path::new("client/main.ts"),
@@ -38,7 +47,6 @@ async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html
         #[cfg(feature = "debug")]
         None,
     );
-    debug!("Loaded css");
 
     let env = state.loader.acquire_env().unwrap();
 
@@ -97,4 +105,52 @@ async fn new_form(State(state): State<Arc<AppState>>) -> axum::response::Result<
     };
 
     Ok(Html(res))
+}
+
+async fn post_form(session: Session, mut multipart: Multipart) -> axum::response::Result<Redirect> {
+    let mut name: Option<String> = None;
+    let mut currency: Option<Currency> = None;
+    let mut amount: Option<u64> = None;
+    let mut frequency: Frequency;
+    let mut start_date: Option<NaiveDate> = None;
+    let mut end_date: Option<NaiveDate> = None;
+
+    while let Some(field) = multipart.next_field().await? {
+        let field_name = field.name().unwrap().to_string();
+
+        if field_name == "name" {
+            name = Some(field.text().await?);
+            continue;
+        }
+
+        if field_name == "currency" {
+            let currency_raw = field.text().await?;
+
+            let deserializer: StrDeserializer<serde::de::value::Error> =
+                currency_raw.as_str().into_deserializer();
+
+            currency = Some(Currency::deserialize(deserializer).map_err(|_| "Invalid currency")?);
+            continue;
+        }
+
+        if field_name == "amount" {
+            let number = u64::from_str_radix(field.text().await?.as_str(), 10)
+                .map_err(|_| "Invalid amount")?;
+
+            amount = Some(number);
+            continue;
+        }
+
+        if field_name == "frequency" {
+            let currency_raw = field.text().await?;
+
+            let deserializer: StrDeserializer<serde::de::value::Error> =
+                currency_raw.as_str().into_deserializer();
+
+            frequency = Frequency::deserialize(deserializer).map_err(|_| "Invalid frequency")?;
+            continue;
+        }
+    }
+
+    Ok(Redirect::to("/upload/success"))
 }
