@@ -1,6 +1,5 @@
 resource "kubernetes_job_v1" "migrations" {
   metadata {
-    name = "fims-db-migration"
     namespace = kubernetes_namespace_v1.this.metadata[0].name
   }
   spec {    
@@ -24,6 +23,7 @@ resource "kubernetes_job_v1" "migrations" {
         }
       }
     }
+    ttl_seconds_after_finished = 60
     backoff_limit = 4
   }
 }
