@@ -65,7 +65,7 @@ resource "kubernetes_deployment_v1" "this" {
 
             volume_mount {
               name = "config"
-              mount_path = "/etc/receipt-manager"
+              mount_path = "/etc/fims"
               read_only = true
             }
             
