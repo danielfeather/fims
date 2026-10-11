@@ -18,7 +18,7 @@ resource "kubernetes_deployment_v1" "this" {
   wait_for_rollout = false
   metadata {
     name = "receipt-manager"
-    namespace = "receipt-manager"
+    namespace = kubernetes_namespace_v1.this.metadata.name
     labels = {
       "app.kubernetes.io/name" = "receipt-manager"
     }
@@ -97,7 +97,7 @@ resource "kubernetes_deployment_v1" "this" {
 resource "kubernetes_service_v1" "this" {
   metadata {
     name = "receipt-manager"
-    namespace = "receipt-manager"
+    namespace = kubernetes_namespace_v1.this.metadata.name
     labels = {
       "app.kubernetes.io/name" = "receipt-manager" 
     }
@@ -120,7 +120,7 @@ resource "kubernetes_service_v1" "this" {
 resource "kubernetes_ingress_v1" "this" {
   metadata {
     name = "receipt-manager"
-    namespace = "receipt-manager"
+    namespace = kubernetes_namespace_v1.this.metadata.name
     annotations = {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
     }

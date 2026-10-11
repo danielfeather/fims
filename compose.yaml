@@ -42,15 +42,8 @@ services:
     depends_on:
       - db
     build:
+      dockerfile: docker/migrations/Dockerfile
       context: .
-      dockerfile_inline: |
-        FROM rust:1.95.0
-
-        WORKDIR root
-
-        RUN cargo install sqlx-cli --no-default-features --features=postgres,native-tls
-
-        CMD [ "sqlx", "migrate", "run" ]
     env_file:
       - .env
     volumes:
