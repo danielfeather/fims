@@ -60,7 +60,7 @@ jobs:
       packages: write
     runs-on: ubuntu-24.04-arm
     outputs:
-      image: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.digest }}
+      image: ghcr.io/${{ github.repository }}-migrations@${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -70,7 +70,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/danielfeather/fims-migrations
+            ghcr.io/${{ github.repository }}-migrations
           tags: |
             type=ref,event=branch
             type=sha

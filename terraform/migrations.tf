@@ -1,16 +1,18 @@
 resource "kubernetes_job_v1" "migrations" {
   metadata {
     namespace = kubernetes_namespace_v1.this.metadata[0].name
+    generate_name = "fims-db-migration-"
   }
-  spec {    
+  spec {
     template {
       metadata {
-        generate_name = "fims-db-migration-"
+        
       }
       spec {
         container {
           name = "sqlx"
           image = var.migration_runner_image
+          restart_policy = "Never"
           env {
             name = "DATABASE_URL"
             value_from {
