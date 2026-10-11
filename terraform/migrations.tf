@@ -12,7 +12,6 @@ resource "kubernetes_job_v1" "migrations" {
         container {
           name = "sqlx"
           image = var.migration_runner_image
-          restart_policy = "Never"
           env {
             name = "DATABASE_URL"
             value_from {
