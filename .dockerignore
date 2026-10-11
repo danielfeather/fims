@@ -5,4 +5,5 @@ vendor
 target
 *.pem
 traefik.yaml
+terraform
 .github
