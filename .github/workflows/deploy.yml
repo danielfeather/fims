@@ -54,6 +54,7 @@ jobs:
   
   build-migration-runner:
     name: Build Migration Runner
+    if: github.ref == 'refs/heads/main'
     needs: migrations
     permissions:
       contents: read
@@ -98,6 +99,7 @@ jobs:
 
   build:
     name: Build Core App
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
