@@ -140,12 +140,10 @@ async fn success(
         return Ok(Redirect::to("/").into_response());
     };
 
-    let env = state.loader.acquire_env().unwrap();
-
-    let templ = env.get_template("success.njk").unwrap();
+    let templ = state.env.get_template("success.j2").unwrap();
 
     let res = templ
-        .render(context! { css => css, scripts => scripts, filename => filename, pages => PAGES, active => 1 })
+        .render(context! { css => css, scripts => scripts, filename => filename, pages => minijinja::value::Serde(PAGES), active => 1 })
         .unwrap();
 
     Ok(Html(res).into_response())
@@ -168,12 +166,11 @@ async fn form(State(state): State<Arc<AppState>>) -> axum::response::Result<Resp
         #[cfg(feature = "debug")]
         None,
     );
-    let env = state.loader.acquire_env().unwrap();
 
-    let res = env
-        .get_template("upload.njk")
+    let res = state.env
+        .get_template("upload.j2")
         .unwrap()
-        .render(context! { css => css, scripts => scripts, pages => PAGES, active => 1 })
+        .render(context! { css => css, scripts => scripts, pages => minijinja::value::Serde(PAGES), active => 1 })
         .unwrap();
 
     Ok(Html(res).into_response())

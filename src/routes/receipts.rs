@@ -75,6 +75,7 @@ async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html
         .map_err(|_| (StatusCode::SERVICE_UNAVAILABLE, "Service is misconfigured"))?;
 
     debug!("attempting to list objects");
+
     let response = client
         .list_objects_v2()
         .bucket(bucket_name)
@@ -85,23 +86,22 @@ async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html
             (StatusCode::INTERNAL_SERVER_ERROR, "Failed to list receipts")
         })?;
 
-    let objects = response.contents();
+    let objects: &[aws_sdk_s3::types::Object] = response.contents();
 
     let receipts: Vec<&str> = objects.iter().filter_map(|ob| ob.key()).collect();
 
-    let env = state.loader.acquire_env().unwrap();
-
-    let templ = env.get_template("receipts.njk").unwrap();
+    let templ = state.env.get_template("receipts.j2").unwrap();
 
     let res = match templ
-        .render(context! { css => css, scripts => scripts, receipts => receipts, pages => PAGES, active => 0 }) {
-            Ok(templ) => templ,
-            Err(e) => {
-                let string = format!("{e}");
-                tracing::error!(string);
-                return Ok(Html(string))
-            },
-        };
+        .render(context! { css => css, scripts => scripts, receipts => minijinja::value::Serde(receipts), active => 0 })
+    {
+        Ok(templ) => templ,
+        Err(e) => {
+            let string = format!("{e}");
+            tracing::error!(string);
+            return Ok(Html(string));
+        }
+    };
 
     Ok(Html(res))
 }
@@ -174,12 +174,10 @@ async fn new_form(State(state): State<Arc<AppState>>) -> axum::response::Result<
     );
     debug!("Loaded css");
 
-    let env = state.loader.acquire_env().unwrap();
-
-    let templ = env.get_template("new-receipt.njk").unwrap();
+    let templ = state.env.get_template("new-receipt.j2").unwrap();
 
     let res = match templ
-        .render(context! { css => css, scripts => scripts, pages => PAGES, active => 0 })
+        .render(context! { css => css, scripts => scripts, pages => minijinja::value::Serde(PAGES), active => 0 })
     {
         Ok(templ) => templ,
         Err(e) => {

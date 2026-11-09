@@ -6,7 +6,9 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Clone, Default)]
+pub mod functions;
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct Manifest(HashMap<PathBuf, Chunk>);
 
 impl Deref for Manifest {

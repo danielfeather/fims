@@ -25,7 +25,7 @@ mod routes;
 const TEMPLATE_PATH: &str = "views";
 
 pub struct AppState {
-    loader: AutoReloader,
+    env: Environment<'static>,
     #[cfg(not(feature = "debug"))]
     manifest: Manifest,
     _pool: Pool<Postgres>,
@@ -62,12 +62,17 @@ async fn main() {
 
     let key = Key::generate();
 
-    let reloader = AutoReloader::new(|notifier| {
-        let mut env = Environment::new();
-        env.set_loader(path_loader(TEMPLATE_PATH));
-        notifier.watch_path(TEMPLATE_PATH, true);
-        Ok(env)
-    });
+    let mut env: Environment<'static> = Environment::new();
+
+    env.add_global("pages", minijinja::value::Serde(PAGES));
+
+    if let Some(manifest) = maybe_manifest {
+        env.add_global("manifest", minijinja::value::Serde(manifest));
+    }
+
+    env.add_function("asset", assets::functions::asset);
+    env.set_loader(path_loader(TEMPLATE_PATH));
+    env.set_auto_reload(cfg!(debug_assertions));
 
     let session_store = MemoryStore::default();
 
@@ -80,7 +85,7 @@ async fn main() {
     let listen_addr = format!("{}:{}", config.host, config.port);
 
     let state = Arc::new(AppState {
-        loader: reloader,
+        env,
         #[cfg(not(feature = "debug"))]
         manifest: maybe_manifest.expect("Unable to find asset manifest"),
         _pool,
@@ -114,28 +119,11 @@ async fn main() {
 }
 
 async fn index(State(state): State<Arc<AppState>>) -> axum::response::Result<Html<String>> {
-    let scripts = assets::resolve_scripts(
-        Path::new("client/main.ts"),
-        #[cfg(not(feature = "debug"))]
-        Some(&state.manifest),
-        #[cfg(feature = "debug")]
-        None,
-    );
-    debug!("Loaded scripts");
-
-    let css = assets::resolve_css(
-        Path::new("client/main.ts"),
-        #[cfg(not(feature = "debug"))]
-        Some(&state.manifest),
-        #[cfg(feature = "debug")]
-        None,
-    );
-    let env = state.loader.acquire_env().unwrap();
-
-    let res = env
-        .get_template("index.njk")
+    let res = state
+        .env
+        .get_template("index.j2")
         .unwrap()
-        .render(context! { css => css, scripts => scripts })
+        .render(context! {})
         .unwrap();
 
     Ok(Html(res))

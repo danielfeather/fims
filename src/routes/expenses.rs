@@ -48,13 +48,9 @@ async fn list(State(state): State<Arc<AppState>>) -> axum::response::Result<Html
         None,
     );
 
-    let env = state.loader.acquire_env().unwrap();
+    let templ = state.env.get_template("expenses.j2").unwrap();
 
-    let templ = env.get_template("expenses.njk").unwrap();
-
-    let res = match templ
-        .render(context! { css => css, scripts => scripts, pages => PAGES, active => 1 })
-    {
+    let res = match templ.render(context! { css => css, scripts => scripts, active => 1 }) {
         Ok(templ) => templ,
         Err(e) => {
             let string = format!("{e}");
@@ -89,13 +85,9 @@ async fn new_form(State(state): State<Arc<AppState>>) -> axum::response::Result<
     );
     debug!("Loaded css");
 
-    let env = state.loader.acquire_env().unwrap();
+    let templ = state.env.get_template("new-expense.j2").unwrap();
 
-    let templ = env.get_template("new-expense.njk").unwrap();
-
-    let res = match templ
-        .render(context! { css => css, scripts => scripts, pages => PAGES, active => 0 })
-    {
+    let res = match templ.render(context! { css => css, scripts => scripts, active => 0 }) {
         Ok(templ) => templ,
         Err(e) => {
             let string = format!("{e}");

@@ -5,6 +5,10 @@ $font-family: arial, sans-serif;
   $govuk-global-styles: true
 );
 
+body {
+  margin: 0;
+}
+
 // .govuk-width-container {
 //   max-width: 100%;
 //   @include govuk-responsive-margin(6, "left");
@@ -18,8 +22,8 @@ $font-family: arial, sans-serif;
 
 :root {
   --govuk-brand-colour: black;
-  --govuk-link-colour: #{govuk-colour("green")};
-  --govuk-surface-border-colour: #{govuk-colour("green", $variant: "tint-25")};
+  // --govuk-link-colour: #{govuk-colour("green")};
+  // --govuk-surface-border-colour: #{govuk-colour("green", $variant: "tint-25")};
 }
 
 .loader {
