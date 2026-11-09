@@ -1,4 +1,9 @@
-{% extends "page.njk" %} 
+{% extends "page.j2" %} 
+
+{% block head %}
+{{ asset('client/main.ts') }}
+{% endblock %}
+
 {% block body %}
 <h1 class="gem-c-heading__text govuk-heading-xl">
     FiMS: Sign in or set up

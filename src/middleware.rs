@@ -54,10 +54,10 @@ pub async fn maintenance(
             #[cfg(feature = "debug")]
             None,
         );
-        let env = state.loader.acquire_env().unwrap();
 
-        let res = env
-            .get_template("service-unavailable.njk")
+        let res = state
+            .env
+            .get_template("service-unavailable.j2")
             .unwrap()
             .render(context! { css => css, scripts => scripts })
             .unwrap();

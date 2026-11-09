@@ -1,0 +1,77 @@
+{% extends "page.j2" %} 
+{% block body %}
+<a href="/" class="govuk-back-link">Back</a>
+<h1 class="govuk-heading-l">New expense</h1>
+<form action="/receipt/new">
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="expense-name">
+            Name
+        </label>
+        <input class="govuk-input govuk-input--width-20" id="expense-name" name="name" type="text">
+    </div>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="expense-currency">
+            What is the currency
+        </label>
+        <input class="govuk-input govuk-input--width-3" id="expense-currency" name="currency" type="text" value="GBP" max="3">
+    </div>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="expense-amount">
+            What is the amount
+        </label>
+        <input class="govuk-input govuk-input--width-10" id="expense-amount" name="amount" type="text">
+    </div>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="sort">
+            How often should this repeat
+        </label>
+        <select class="govuk-select" id="sort" name="frequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="annually">Annually</option>
+        </select>
+    </div>
+    <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="expense-start-hint">
+            <legend class="govuk-fieldset__legend">
+                For when should this expense start?
+            </legend>
+            <div id="expense-start-hint" class="govuk-hint">
+                For example, 20 6 2026
+            </div>
+            <div class="govuk-date-input" id="expense-start-hint">
+                <div class="govuk-date-input__item">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="start_day">
+                            Day
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="start_day" name="start_day" type="text" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="govuk-date-input__item">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="start_month">
+                            Month
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="start_month" name="start_month" type="text" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="govuk-date-input__item">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="start_year">
+                            Year
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="start_year" name="start_year" type="text" inputmode="numeric">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="govuk-button-group">
+    <button name="submit" type="submit" class="govuk-button" data-module="govuk-button">
+        Save and continue
+    </button>
+    </div>
+</form>
+{% endblock %}

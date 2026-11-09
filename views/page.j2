@@ -9,9 +9,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    {% for file in css %}
-    <link href="/{{ file }}" rel="stylesheet" />
-    {% endfor %}
+    {% block head %}
+    {% endblock %}
   </head>
 
   <body class="govuk-template__body govuk-body">
@@ -28,7 +27,7 @@
       data-module="govuk-skip-link"
       >Skip to main content</a
     >
-    {% include 'header.njk' %}
+    {% include 'header.j2' %}
     <div class="govuk-width-container">
       <main class="govuk-main-wrapper" id="main-content">
       {% block body %} {% endblock %}
@@ -45,8 +44,5 @@
         </div>
       </div>
     </footer>
-    {% for file in scripts %}
-    <script type="module" src="{{ file }}"></script>
-    {% endfor %}
   </body>
 </html>

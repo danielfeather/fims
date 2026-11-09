@@ -50,6 +50,7 @@ async fn redirect(
         query.append_pair("client_id", &oidc.client_id);
         query.append_pair("state", &state);
         query.append_pair("redirect_uri", redirect_uri.as_str());
+        query.append_pair("response_type", "code");
         query.append_pair("scope", "openid");
     }
 
